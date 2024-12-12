@@ -2,8 +2,8 @@
 ### Docker Build Arguments
 ### Available only during Docker build - `docker build --build-arg ...`
 ### --------------------------------------------------------------------
-ARG ALPINE_VERSION="3.13"
-ARG PYTHON_VERSION="3.9.1"
+ARG ALPINE_VERSION="3.20"
+ARG PYTHON_VERSION="3.12.6"
 ARG APP_NAME="frigga"
 ARG APP_PYTHON_USERBASE="/frigga"
 ARG APP_USER_NAME="appuser"
@@ -16,7 +16,7 @@ ARG APP_GROUP_ID="1000"
 ### --------------------------------------------------------------------
 ### Build Stage
 ### --------------------------------------------------------------------
-FROM python:"$PYTHON_VERSION"-alpine"${ALPINE_VERSION}" as build
+FROM python:"$PYTHON_VERSION"-alpine"${ALPINE_VERSION}" AS build
 
 ARG APP_PYTHON_USERBASE
 
@@ -59,7 +59,7 @@ CMD ["bash"]
 ### --------------------------------------------------------------------
 ### App Stage
 ### --------------------------------------------------------------------
-FROM python:"$PYTHON_VERSION"-alpine"${ALPINE_VERSION}" as app
+FROM python:"$PYTHON_VERSION"-alpine"${ALPINE_VERSION}" AS app
 
 # Fetch values from ARGs that were declared at the top of this file
 ARG APP_NAME
@@ -79,7 +79,7 @@ ENV PATH="${PYTHONUSERBASE}/bin:${PATH}"
 # Define workdir
 WORKDIR "$PYTHONUSERBASE"
 
-# Run as a non-root user
+# Run AS a non-root user
 RUN \
     addgroup -g "${APP_GROUP_ID}" "${APP_GROUP_NAME}" && \
     adduser -H -D -u "$APP_USER_ID" -G "$APP_GROUP_NAME" "$APP_USER_NAME" && \
@@ -89,7 +89,7 @@ USER "$APP_USER_NAME"
 # Copy artifacts from Build Stage
 COPY --from=build --chown="$APP_USER_NAME":"$APP_GROUP_ID" /dist/ "$PYTHONUSERBASE"/
 
-# The container runs the application, or any other supplied command, such as "bash" or "echo hello"
+# The container runs the application, or any other supplied command, such AS "bash" or "echo hello"
 # CMD python -m ${APP_NAME}
 
 # Use ENTRYPOINT instead CMD to force the container to start the application

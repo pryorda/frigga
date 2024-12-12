@@ -129,6 +129,10 @@ def get_metrics_list(base_url, api_key, output_file_path=".metrics.json"):
         print_msg(
             msg_content=f"Found {data['dashboards'][dashboard_name]['num_metrics']} metrics"  # noqa: 501
         )
+        print_msg(
+            msg_content=f"Metrics from {dashboard_name}:\n{dashboard_metrics}",
+            msg_type="log"
+        )
 
     all_metrics = []
     for dashboard_name in data['dashboards']:
