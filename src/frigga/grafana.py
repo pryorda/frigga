@@ -5,14 +5,19 @@ from .config import scrape_value_by_key, print_msg
 from .prometheus import get_ignored_words
 
 
-def grafana_http_request(path, api_key, base_url="http://localhost:3000"):
+def grafana_http_request(path, api_key, base_url="https://localhost:3000"):
     if not api_key:
         print_msg(msg_content="Missing API Key",
                   msg_type='error', terminate=True)
     url = f"{base_url}{path}"
-    response = requests.get(url, headers={
-        "Authorization": f"Bearer {api_key}"
-    })
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
+    print_msg(msg_content=f"Requesting {url} with {headers}", msg_type='log')
+    response = requests.get(url, headers=headers)    
+    
     if 200 <= response.status_code < 400:
         print_msg(
             msg_content=f"Successful response from {url}", msg_type='log')
@@ -93,6 +98,9 @@ def get_metrics_list(base_url, api_key, output_file_path=".metrics.json"):
         "dashboards": dict()
     }
     for dashboard in dashboards:
+        print_msg(msg_content=f"Found dashboard {dashboard['uid']}:{dashboard['title']} with type {dashboard['type']}")
+        if dashboard['type'] == 'dash-folder':
+            continue
         dashboard_body = grafana_http_request(
             f"/api/dashboards/uid/{dashboard['uid']}",
             api_key,
